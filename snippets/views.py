@@ -21,12 +21,20 @@ class SnippetViewSet(CacheResponseMixin, ModelViewSet):
 
     Additionally we also provide an extra `highlight` action.
     """
-    queryset = Snippet.objects.all()
     serializer_class = SnippetSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly]
     object_cache_timeout = CACHE_TIMEOUT
     list_cache_timeout = CACHE_TIMEOUT
+
+    def get_queryset(self):
+        print(self.request.user)
+        user = self.request.user
+        if user.is_authenticated:
+            queryset = Snippet.objects.filter(owner=user.id)
+        else:
+            queryset = Snippet.objects.none()
+        return queryset
 
     @action(detail=True, renderer_classes=[renderers.StaticHTMLRenderer])
     def highlight(self, request, *args, **kwargs):
