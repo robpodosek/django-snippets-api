@@ -31,7 +31,7 @@ class SnippetViewSet(CacheResponseMixin, ModelViewSet):
         print(self.request.user)
         user = self.request.user
         if user.is_authenticated:
-            queryset = Snippet.objects.filter(owner=user.id)
+            queryset = Snippet.objects.filter(owner=user)
         else:
             queryset = Snippet.objects.none()
         return queryset
